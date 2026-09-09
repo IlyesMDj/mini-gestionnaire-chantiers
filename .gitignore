@@ -1,0 +1,23 @@
+###> outillage local, hors livrable ###
+/.claude/
+/CLAUDE.md
+/PLAN.md
+/NOTES-ENTRETIEN.md
+###< outillage local, hors livrable ###
+
+###> editeurs ###
+.idea/
+.vscode/
+*.iml
+.DS_Store
+###< editeurs ###
+
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
