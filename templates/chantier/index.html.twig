@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Chantiers — Mini-Gestionnaire de Chantiers{% endblock %}
+
+{% block body %}
+<main class="mx-auto max-w-6xl px-4 py-10">
+    <header class="mb-8">
+        <h1 class="text-2xl font-semibold tracking-tight">Chantiers</h1>
+        <p class="mt-1 text-sm text-slate-600">
+            {{ chantiers|length }} chantier(s) enregistré(s), du plus récent au plus ancien.
+        </p>
+    </header>
+
+    <div class="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
+        <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+            <thead class="bg-slate-100 text-xs uppercase tracking-wide text-slate-600">
+                <tr>
+                    <th scope="col" class="px-4 py-3 font-semibold">Nom</th>
+                    <th scope="col" class="px-4 py-3 font-semibold">Adresse</th>
+                    <th scope="col" class="px-4 py-3 font-semibold">Date de début</th>
+                    <th scope="col" class="px-4 py-3 font-semibold">Statut</th>
+                    <th scope="col" class="px-4 py-3 font-semibold">Équipements</th>
+                    <th scope="col" class="px-4 py-3 font-semibold">Action</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200">
+                {% for chantier in chantiers %}
+                    <tr data-chantier-row data-chantier-id="{{ chantier.id }}" class="align-top">
+                        <td class="px-4 py-3 font-medium text-slate-900">{{ chantier.nom }}</td>
+                        <td class="px-4 py-3 text-slate-700">{{ chantier.adresse }}</td>
+                        <td class="whitespace-nowrap px-4 py-3 text-slate-700">{{ chantier.dateDebut|date('d/m/Y') }}</td>
+                        <td class="px-4 py-3">
+                            <span class="{{ chantier.statut.badgeClass }}" data-statut-badge>{{ chantier.statut.label }}</span>
+                        </td>
+                        <td class="px-4 py-3 text-slate-700">
+                            <ul class="space-y-1">
+                                {% for equipement in chantier.equipements %}
+                                    <li>{{ equipement.nom }} <span class="text-slate-500">({{ equipement.quantite }} en stock)</span></li>
+                                {% else %}
+                                    <li class="text-slate-400">Aucun équipement</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                        <td class="px-4 py-3">
+                            {% if chantier.statut.value != 'termine' %}
+                                <button type="button"
+                                        class="whitespace-nowrap rounded-md border border-green-600 px-3 py-1.5 text-sm font-medium text-green-700 hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-50"
+                                        data-terminer-btn
+                                        data-url="/chantiers/{{ chantier.id }}/terminer">
+                                    Marquer comme terminé
+                                </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="px-4 py-8 text-center text-slate-500">Aucun chantier enregistré.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+{% endblock %}
