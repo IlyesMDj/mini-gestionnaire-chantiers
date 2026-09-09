@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -20,6 +22,14 @@ class Equipement
     #[ORM\Column]
     #[Assert\PositiveOrZero(message: 'La quantité ne peut pas être négative.')]
     private int $quantite = 0;
+
+    #[ORM\ManyToMany(targetEntity: Chantier::class, mappedBy: 'equipements')]
+    private Collection $chantiers;
+
+    public function __construct()
+    {
+        $this->chantiers = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -48,5 +58,10 @@ class Equipement
         $this->quantite = $quantite;
 
         return $this;
+    }
+
+    public function getChantiers(): Collection
+    {
+        return $this->chantiers;
     }
 }

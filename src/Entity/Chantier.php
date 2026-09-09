@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Enum\StatutChantier;
 use App\Exception\ChantierDejaTermineException;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -29,6 +31,15 @@ class Chantier
 
     #[ORM\Column(length: 20, enumType: StatutChantier::class)]
     private StatutChantier $statut = StatutChantier::EnAttente;
+
+    #[ORM\ManyToMany(targetEntity: Equipement::class, inversedBy: 'chantiers')]
+    #[ORM\JoinTable(name: 'chantier_equipement')]
+    private Collection $equipements;
+
+    public function __construct()
+    {
+        $this->equipements = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -79,6 +90,28 @@ class Chantier
     public function setStatut(StatutChantier $statut): static
     {
         $this->statut = $statut;
+
+        return $this;
+    }
+
+    public function getEquipements(): Collection
+    {
+        return $this->equipements;
+    }
+
+    public function addEquipement(Equipement $equipement): static
+    {
+        // contains() évite un doublon en table de jointure : Doctrine ne le fait pas.
+        if (!$this->equipements->contains($equipement)) {
+            $this->equipements->add($equipement);
+        }
+
+        return $this;
+    }
+
+    public function removeEquipement(Equipement $equipement): static
+    {
+        $this->equipements->removeElement($equipement);
 
         return $this;
     }
