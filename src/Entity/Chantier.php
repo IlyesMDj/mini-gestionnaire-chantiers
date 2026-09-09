@@ -4,12 +4,13 @@ namespace App\Entity;
 
 use App\Enum\StatutChantier;
 use App\Exception\ChantierDejaTermineException;
+use App\Repository\ChantierRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: ChantierRepository::class)]
 class Chantier
 {
     #[ORM\Id]
