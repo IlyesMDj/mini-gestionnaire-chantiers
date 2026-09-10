@@ -39,6 +39,31 @@ async function terminerChantier(bouton) {
     }
 }
 
+document.addEventListener('click', (event) => {
+    const bouton = event.target.closest('[data-simulation-btn]');
+    if (!bouton) {
+        return;
+    }
+
+    simulerEchec(bouton);
+});
+
+async function simulerEchec(bouton) {
+    const zoneErreur = bouton.closest('[data-simulation]').querySelector('[data-erreur]');
+    const controleur = new AbortController();
+    const minuterie = setTimeout(() => controleur.abort(), Number(bouton.dataset.delai ?? DELAI_MAX_MS));
+
+    masquerErreur(zoneErreur);
+
+    try {
+        await envoyerTerminaison(bouton.dataset.url, bouton.dataset.csrf, controleur.signal);
+    } catch (erreur) {
+        afficherErreur(zoneErreur, messagePour(erreur));
+    } finally {
+        clearTimeout(minuterie);
+    }
+}
+
 async function envoyerTerminaison(url, jetonCsrf, signal) {
     const reponse = await fetch(url, {
         method: 'POST',
