@@ -117,9 +117,14 @@ class Chantier
         return $this;
     }
 
+    public function estTermine(): bool
+    {
+        return $this->statut === StatutChantier::Termine;
+    }
+
     public function terminer(): void
     {
-        if ($this->statut === StatutChantier::Termine) {
+        if ($this->estTermine()) {
             throw new ChantierDejaTermineException();
         }
 
