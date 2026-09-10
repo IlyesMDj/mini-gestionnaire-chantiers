@@ -2,8 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Chantier;
+use App\Exception\ChantierDejaTermineException;
 use App\Repository\ChantierRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -14,6 +18,29 @@ final class ChantierController extends AbstractController
     {
         return $this->render('chantier/index.html.twig', [
             'chantiers' => $chantiers->findAllWithEquipements(),
+        ]);
+    }
+
+    #[Route('/chantiers/{id}/terminer', name: 'app_chantier_terminer', methods: ['POST'])]
+    public function terminer(Chantier $chantier, EntityManagerInterface $entityManager): JsonResponse
+    {
+        try {
+            $chantier->terminer();
+            $entityManager->flush();
+        } catch (ChantierDejaTermineException) {
+            // 409 et non 400 : la requête est valide, c'est l'état de la ressource qui interdit l'opération.
+            return $this->json([
+                'success' => false,
+                'message' => 'Ce chantier est déjà terminé.',
+            ], Response::HTTP_CONFLICT);
+        }
+
+        return $this->json([
+            'success' => true,
+            'id' => $chantier->getId(),
+            'statut' => $chantier->getStatut()->value,
+            'statutLabel' => $chantier->getStatut()->label(),
+            'statutClasse' => $chantier->getStatut()->badgeClass(),
         ]);
     }
 }
