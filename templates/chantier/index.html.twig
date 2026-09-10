@@ -46,7 +46,8 @@
                                 <button type="button"
                                         class="whitespace-nowrap rounded-md border border-green-600 px-3 py-1.5 text-sm font-medium text-green-700 hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-50"
                                         data-terminer-btn
-                                        data-url="{{ path('app_chantier_terminer', {id: chantier.id}) }}">
+                                        data-url="{{ path('app_chantier_terminer', {id: chantier.id}) }}"
+                                        data-csrf="{{ csrf_token('terminer_chantier_' ~ chantier.id) }}">
                                     Marquer comme terminé
                                 </button>
                                 <p class="mt-1 hidden text-sm text-red-600" data-erreur></p>

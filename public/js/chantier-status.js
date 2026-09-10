@@ -25,7 +25,7 @@ document.addEventListener('click', async (event) => {
     const minuterie = setTimeout(() => controleur.abort(), DELAI_MAX_MS);
 
     try {
-        const donnees = await envoyerTerminaison(bouton.dataset.url, controleur.signal);
+        const donnees = await envoyerTerminaison(bouton.dataset, controleur.signal);
         appliquerSucces(badge, bouton, donnees);
     } catch (erreur) {
         afficherErreur(zoneErreur, messagePour(erreur));
@@ -35,10 +35,13 @@ document.addEventListener('click', async (event) => {
     }
 });
 
-async function envoyerTerminaison(url, signal) {
-    const reponse = await fetch(url, {
+async function envoyerTerminaison(donneesBouton, signal) {
+    const reponse = await fetch(donneesBouton.url, {
         method: 'POST',
-        headers: { 'Accept': 'application/json' },
+        headers: {
+            'Accept': 'application/json',
+            'X-CSRF-Token': donneesBouton.csrf,
+        },
         signal,
     });
 
