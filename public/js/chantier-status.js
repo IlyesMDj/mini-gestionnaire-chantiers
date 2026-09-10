@@ -7,12 +7,16 @@ const MESSAGES = {
     defaut: 'Une erreur serveur est survenue.',
 };
 
-document.addEventListener('click', async (event) => {
+document.addEventListener('click', (event) => {
     const bouton = event.target.closest('[data-terminer-btn]');
     if (!bouton) {
         return;
     }
 
+    terminerChantier(bouton);
+});
+
+async function terminerChantier(bouton) {
     const ligne = bouton.closest('[data-chantier-row]');
     const badge = ligne.querySelector('[data-statut-badge]');
     const zoneErreur = ligne.querySelector('[data-erreur]');
@@ -25,31 +29,31 @@ document.addEventListener('click', async (event) => {
     const minuterie = setTimeout(() => controleur.abort(), DELAI_MAX_MS);
 
     try {
-        const donnees = await envoyerTerminaison(bouton.dataset, controleur.signal);
-        appliquerSucces(badge, bouton, donnees);
+        const chantierTermine = await envoyerTerminaison(bouton.dataset.url, bouton.dataset.csrf, controleur.signal);
+        appliquerSucces(badge, bouton, chantierTermine);
     } catch (erreur) {
         afficherErreur(zoneErreur, messagePour(erreur));
         reactiverBouton(bouton);
     } finally {
         clearTimeout(minuterie);
     }
-});
+}
 
-async function envoyerTerminaison(donneesBouton, signal) {
-    const reponse = await fetch(donneesBouton.url, {
+async function envoyerTerminaison(url, jetonCsrf, signal) {
+    const reponse = await fetch(url, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
-            'X-CSRF-Token': donneesBouton.csrf,
+            'X-CSRF-Token': jetonCsrf,
         },
         signal,
     });
 
     // fetch ne rejette pas sur un code 4xx ou 5xx : il faut tester reponse.ok soi-même.
     if (!reponse.ok) {
-        const erreur = await reponse.json().catch(() => ({}));
+        const echec = await reponse.json().catch(() => ({}));
 
-        throw new Error(erreur.message ?? MESSAGES[reponse.status] ?? MESSAGES.defaut);
+        throw new Error(echec.message ?? MESSAGES[reponse.status] ?? MESSAGES.defaut);
     }
 
     return reponse.json();
@@ -80,9 +84,9 @@ function reactiverBouton(bouton) {
     bouton.textContent = bouton.dataset.libelleInitial;
 }
 
-function appliquerSucces(badge, bouton, donnees) {
-    badge.textContent = donnees.statutLabel;
-    badge.className = donnees.statutClasse;
+function appliquerSucces(badge, bouton, chantierTermine) {
+    badge.textContent = chantierTermine.statutLabel;
+    badge.className = chantierTermine.statutClasse;
     bouton.remove();
 }
 

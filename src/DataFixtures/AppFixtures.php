@@ -50,15 +50,15 @@ final class AppFixtures extends Fixture
         ],
     ];
 
-    public function load(ObjectManager $manager): void
+    public function load(ObjectManager $objectManager): void
     {
-        $equipements = $this->creerEquipements($manager);
-        $this->creerChantiers($manager, $equipements);
+        $equipements = $this->creerEquipements($objectManager);
+        $this->creerChantiers($objectManager, $equipements);
 
-        $manager->flush();
+        $objectManager->flush();
     }
 
-    private function creerEquipements(ObjectManager $manager): array
+    private function creerEquipements(ObjectManager $objectManager): array
     {
         $equipements = [];
 
@@ -67,14 +67,14 @@ final class AppFixtures extends Fixture
                 ->setNom($definition['nom'])
                 ->setQuantite($definition['quantite']);
 
-            $manager->persist($equipement);
+            $objectManager->persist($equipement);
             $equipements[$reference] = $equipement;
         }
 
         return $equipements;
     }
 
-    private function creerChantiers(ObjectManager $manager, array $equipements): void
+    private function creerChantiers(ObjectManager $objectManager, array $equipements): void
     {
         foreach (self::CHANTIERS as $definition) {
             $chantier = (new Chantier())
@@ -87,7 +87,7 @@ final class AppFixtures extends Fixture
                 $chantier->addEquipement($equipements[$reference]);
             }
 
-            $manager->persist($chantier);
+            $objectManager->persist($chantier);
         }
     }
 }

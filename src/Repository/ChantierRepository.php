@@ -18,8 +18,7 @@ final class ChantierRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('c')
             ->leftJoin('c.equipements', 'e')
-            // Sans addSelect('e'), la jointure filtrerait sans hydrater : Doctrine
-            // relancerait une requête par chantier au moment de l'affichage.
+            // Sans addSelect, la jointure filtre sans hydrater : Doctrine relancerait une requête par chantier.
             ->addSelect('e')
             ->orderBy('c.dateDebut', 'DESC')
             ->getQuery()
