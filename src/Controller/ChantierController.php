@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\Chantier;
 use App\Exception\ChantierDejaTermineException;
 use App\Repository\ChantierRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Service\ChantierStatusUpdater;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,7 +23,7 @@ final class ChantierController extends AbstractController
     }
 
     #[Route('/chantiers/{id}/terminer', name: 'app_chantier_terminer', methods: ['POST'])]
-    public function terminer(Chantier $chantier, Request $request, EntityManagerInterface $entityManager): JsonResponse
+    public function terminer(Chantier $chantier, Request $request, ChantierStatusUpdater $chantierStatusUpdater): JsonResponse
     {
         // Sans jeton, un site tiers pourrait déclencher ce changement d'état depuis le navigateur de l'utilisateur.
         if (!$this->isCsrfTokenValid('terminer_chantier_' . $chantier->getId(), $request->headers->get('X-CSRF-Token'))) {
@@ -31,8 +31,7 @@ final class ChantierController extends AbstractController
         }
 
         try {
-            $chantier->terminer();
-            $entityManager->flush();
+            $chantierStatusUpdater->terminer($chantier);
         } catch (ChantierDejaTermineException) {
             // 409 et non 400 : la requête est valide, c'est l'état de la ressource qui interdit l'opération.
             return $this->json(['success' => false, 'message' => 'Ce chantier est déjà terminé.'], Response::HTTP_CONFLICT);
