@@ -46,7 +46,7 @@
                                 <button type="button"
                                         class="whitespace-nowrap rounded-md border border-green-600 px-3 py-1.5 text-sm font-medium text-green-700 hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-50"
                                         data-terminer-btn
-                                        data-url="/chantiers/{{ chantier.id }}/terminer">
+                                        data-url="{{ path('app_chantier_terminer', {id: chantier.id}) }}">
                                     Marquer comme terminé
                                 </button>
                             {% endif %}
@@ -61,4 +61,8 @@
         </table>
     </div>
 </main>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="/js/chantier-status.js" defer></script>
 {% endblock %}
