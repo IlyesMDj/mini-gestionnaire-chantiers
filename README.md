@@ -211,6 +211,14 @@ AJAX. L'alternative — une table de correspondance statut vers classes côté J
 dupliquerait ce mapping entre PHP et JavaScript, ce qui est pire qu'un couplage centralisé
 dans un enum de trois cas. Sur une API publique, l'endpoint ne renverrait que `statut`.
 
+**8. `.env` est versionné, `.env.local` ne l'est pas.**
+`.env` porte les valeurs par défaut du projet, sans secret : c'est ce qui permet de démarrer
+sans rien configurer avec l'option A. `.env.local` porte les identifiants d'une machine donnée
+et n'est jamais versionné. Symfony charge le premier, puis applique le second par-dessus.
+L'alternative — ne rien fournir et exiger un `.env.local` dès le départ — ajouterait une étape
+manuelle avant la première commande, sans rien protéger : les valeurs du conteneur de
+développement ne sont pas des secrets.
+
 ## Structure du projet
 
 ```
