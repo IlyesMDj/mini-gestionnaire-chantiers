@@ -6,12 +6,13 @@ le rendu d'un test technique J4R.
 
 ## Stack
 
-Symfony 6.4 LTS · PHP 8.1+ · MySQL 8 · Doctrine ORM 3 · Twig · Tailwind CSS (Play CDN) ·
+Symfony 6.4 LTS · PHP 8.3+ · MySQL 8 · Doctrine ORM 3 · Twig · Tailwind CSS (Play CDN) ·
 JavaScript vanilla, sans étape de build.
 
 ## Prérequis
 
-- PHP >= 8.1 en ligne de commande, avec les extensions `pdo_mysql`, `intl` et `mbstring`
+- PHP >= 8.3 en ligne de commande, avec les extensions `pdo_mysql`, `intl` et `mbstring`
+  (le code applicatif vise Symfony 6.4 et PHP 8.1 ; c'est PHPUnit 12 qui relève le plancher)
 - Composer 2
 - Docker Desktop (option A ci-dessous) **ou** un MySQL 8 déjà installé (option B)
 - Symfony CLI : facultatif, une alternative est fournie à chaque étape qui l'utilise
@@ -111,6 +112,15 @@ Cliquez dessus : le bouton passe en état de chargement, une requête `POST` par
 `/chantiers/{id}/terminer`, puis le badge de statut est mis à jour à la réponse et le bouton
 disparaît. Aucune page n'est rechargée.
 
+À force de tester, tous les chantiers finissent terminés et les boutons disparaissent. Pour
+revenir au jeu de départ :
+
+```bash
+php bin/console doctrine:fixtures:load --no-interaction
+```
+
+La commande purge la base avant de recharger.
+
 ## Gestion des erreurs AJAX
 
 Chaque cas d'échec produit un message en français, affiché sous la ligne concernée. Dans tous
@@ -193,6 +203,13 @@ les deux chemins d'installation sont documentés plus haut.
 Ce pack embarque `asset-mapper`, `stimulus-bundle` et `ux-turbo`. Ces composants contredisent
 l'annonce « JavaScript vanilla sans framework », et Turbo en particulier rendrait ambigu qui
 produit réellement la mise à jour de la page. Chaque paquet a donc été ajouté explicitement.
+
+**7. Les classes CSS du badge sont produites par l'enum, et renvoyées dans la réponse JSON.**
+C'est un couplage assumé entre le domaine et la présentation. La raison : la classe du badge
+est nécessaire à deux endroits, au rendu initial par Twig et à la mise à jour après réponse
+AJAX. L'alternative — une table de correspondance statut vers classes côté JavaScript —
+dupliquerait ce mapping entre PHP et JavaScript, ce qui est pire qu'un couplage centralisé
+dans un enum de trois cas. Sur une API publique, l'endpoint ne renverrait que `statut`.
 
 ## Structure du projet
 
