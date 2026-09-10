@@ -85,7 +85,7 @@ final class ChantierStatusControllerTest extends WebTestCase
     private function jetonDeLaPage(): string
     {
         return $this->client->request('GET', '/')
-            ->filter(sprintf('[data-chantier-id="%d"] [data-terminer-btn]', $this->chantierId))
+            ->filter(sprintf('[data-chantier-id="%d"] [data-bouton-terminer]', $this->chantierId))
             ->attr('data-csrf');
     }
 

@@ -20,11 +20,10 @@ final class ChantierController extends AbstractController
     public function index(ChantierRepository $chantiers): Response
     {
         $tousLesChantiers = $chantiers->findAllWithEquipements();
-        $termines = array_filter($tousLesChantiers, static fn (Chantier $chantier) => $chantier->estTermine());
 
         return $this->render('chantier/index.html.twig', [
             'chantiers' => $tousLesChantiers,
-            'chantierDemonstration' => reset($termines) ?: null,
+            'chantierDemonstration' => $this->premierChantierTermine($tousLesChantiers),
         ]);
     }
 
@@ -33,16 +32,33 @@ final class ChantierController extends AbstractController
     {
         // Sans jeton, un site tiers pourrait déclencher ce changement d'état depuis le navigateur de l'utilisateur.
         if (!$this->isCsrfTokenValid('terminer_chantier_' . $chantier->getId(), $request->headers->get('X-CSRF-Token'))) {
-            return $this->json(['success' => false, 'message' => 'Session expirée, rechargez la page.'], Response::HTTP_FORBIDDEN);
+            return $this->echec('Session expirée, rechargez la page.', Response::HTTP_FORBIDDEN);
         }
 
         try {
             $chantierStatusUpdater->terminer($chantier);
         } catch (ChantierDejaTermineException) {
             // 409 et non 400 : la requête est valide, c'est l'état de la ressource qui interdit l'opération.
-            return $this->json(['success' => false, 'message' => 'Ce chantier est déjà terminé.'], Response::HTTP_CONFLICT);
+            return $this->echec('Ce chantier est déjà terminé.', Response::HTTP_CONFLICT);
         }
 
+        return $this->chantierTermine($chantier);
+    }
+
+    /** @param Chantier[] $chantiers */
+    private function premierChantierTermine(array $chantiers): ?Chantier
+    {
+        foreach ($chantiers as $chantier) {
+            if ($chantier->estTermine()) {
+                return $chantier;
+            }
+        }
+
+        return null;
+    }
+
+    private function chantierTermine(Chantier $chantier): JsonResponse
+    {
         return $this->json([
             'success' => true,
             'id' => $chantier->getId(),
@@ -50,5 +66,10 @@ final class ChantierController extends AbstractController
             'statutLabel' => $chantier->getStatut()->label(),
             'statutClasse' => $chantier->getStatut()->badgeClass(),
         ]);
+    }
+
+    private function echec(string $message, int $codeHttp): JsonResponse
+    {
+        return $this->json(['success' => false, 'message' => $message], $codeHttp);
     }
 }

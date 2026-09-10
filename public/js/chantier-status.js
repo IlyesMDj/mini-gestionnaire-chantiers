@@ -1,4 +1,5 @@
 const DELAI_MAX_MS = 8000;
+const DELAI_TROP_COURT_MS = 1;
 
 const MESSAGES = {
     404: "Ce chantier n'existe plus.",
@@ -8,7 +9,7 @@ const MESSAGES = {
 };
 
 document.addEventListener('click', (event) => {
-    const bouton = event.target.closest('[data-terminer-btn]');
+    const bouton = event.target.closest('[data-bouton-terminer]');
     if (!bouton) {
         return;
     }
@@ -40,7 +41,7 @@ async function terminerChantier(bouton) {
 }
 
 document.addEventListener('click', (event) => {
-    const bouton = event.target.closest('[data-simulation-btn]');
+    const bouton = event.target.closest('[data-bouton-simulation]');
     if (!bouton) {
         return;
     }
@@ -50,8 +51,9 @@ document.addEventListener('click', (event) => {
 
 async function simulerEchec(bouton) {
     const zoneErreur = bouton.closest('[data-simulation]').querySelector('[data-erreur]');
+    const delai = bouton.hasAttribute('data-simulation-delai') ? DELAI_TROP_COURT_MS : DELAI_MAX_MS;
     const controleur = new AbortController();
-    const minuterie = setTimeout(() => controleur.abort(), Number(bouton.dataset.delai ?? DELAI_MAX_MS));
+    const minuterie = setTimeout(() => controleur.abort(), delai);
 
     masquerErreur(zoneErreur);
 

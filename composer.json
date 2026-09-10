@@ -19,7 +19,6 @@
         "symfony/runtime": "6.4.*",
         "symfony/security-csrf": "6.4.*",
         "symfony/twig-bundle": "6.4.*",
-        "symfony/validator": "6.4.*",
         "symfony/yaml": "6.4.*"
     },
     "config": {

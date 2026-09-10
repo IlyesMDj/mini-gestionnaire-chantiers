@@ -45,7 +45,7 @@
                             {% if not chantier.estTermine %}
                                 <button type="button"
                                         class="whitespace-nowrap rounded-md border border-green-600 px-3 py-1.5 text-sm font-medium text-green-700 hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-50"
-                                        data-terminer-btn
+                                        data-bouton-terminer
                                         data-url="{{ path('app_chantier_terminer', {id: chantier.id}) }}"
                                         data-csrf="{{ csrf_token('terminer_chantier_' ~ chantier.id) }}">
                                     Marquer comme terminé
@@ -77,13 +77,13 @@
 
             <div class="mt-3 flex flex-wrap gap-2">
                 <button type="button" class="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
-                        data-simulation-btn data-url="{{ urlTermine }}" data-csrf="jeton-invalide">Token invalide · 403</button>
+                        data-bouton-simulation data-url="{{ urlTermine }}" data-csrf="jeton-invalide">Token invalide · 403</button>
                 <button type="button" class="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
-                        data-simulation-btn data-url="{{ path('app_chantier_terminer', {id: 0}) }}" data-csrf="{{ jetonTermine }}">Chantier inexistant · 404</button>
+                        data-bouton-simulation data-url="{{ path('app_chantier_terminer', {id: 0}) }}" data-csrf="{{ jetonTermine }}">Chantier inexistant · 404</button>
                 <button type="button" class="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
-                        data-simulation-btn data-url="{{ urlTermine }}" data-csrf="{{ jetonTermine }}">Déjà terminé · 409</button>
+                        data-bouton-simulation data-url="{{ urlTermine }}" data-csrf="{{ jetonTermine }}">Déjà terminé · 409</button>
                 <button type="button" class="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
-                        data-simulation-btn data-url="{{ urlTermine }}" data-csrf="{{ jetonTermine }}" data-delai="1">Délai dépassé</button>
+                        data-bouton-simulation data-url="{{ urlTermine }}" data-csrf="{{ jetonTermine }}" data-simulation-delai>Délai dépassé</button>
             </div>
 
             <p class="mt-3 hidden text-sm text-red-600" data-erreur role="alert"></p>

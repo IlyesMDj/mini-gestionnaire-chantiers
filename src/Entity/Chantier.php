@@ -10,7 +10,6 @@ use App\Repository\ChantierRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ChantierRepository::class)]
 class Chantier
@@ -21,15 +20,12 @@ class Chantier
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Le nom du chantier est obligatoire.')]
     private string $nom = '';
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: "L'adresse du chantier est obligatoire.")]
     private string $adresse = '';
 
     #[ORM\Column(type: 'date_immutable')]
-    #[Assert\NotNull(message: 'La date de début est obligatoire.')]
     private ?\DateTimeImmutable $dateDebut = null;
 
     #[ORM\Column(length: 20, enumType: StatutChantier::class)]
